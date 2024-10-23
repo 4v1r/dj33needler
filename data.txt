@@ -1,0 +1,6 @@
+artistName=dj33needler
+email=dj33needler@aaa.lol
+instagram=https://www.instagram.com/dj.33needler/
+spotify=https://open.spotify.com/artist/1Kynf6fif2phV1ZH7PX63j
+soundcloud=https://soundcloud.com/dj33needler
+spotifyEmbed=https://open.spotify.com/embed/artist/1Kynf6fif2phV1ZH7PX63j

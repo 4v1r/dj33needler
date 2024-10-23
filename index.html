@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>dj33needler</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="icon" type="image/x-icon" href="icon.ico">
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #fff5f5;
+            color: #4a4a4a;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background: linear-gradient(135deg, #ffd1dc, #ffe4e1);
+            padding: 60px 0;
+            text-align: center;
+        }
+        h1 {
+            font-size: 4em;
+            margin-bottom: 10px;
+            color: #ff69b4;
+            letter-spacing: 5px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        .aka {
+            font-size: 1.2em;
+            color: #ff69b4;
+            margin-bottom: 20px;
+        }
+        .social-links {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .social-links a {
+            color: #ff69b4;
+            text-decoration: none;
+            margin: 0 15px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            font-size: 1.1em;
+        }
+        .social-links a:hover {
+            color: #ff1493;
+            transform: translateY(-3px);
+        }
+        .social-links i {
+            margin-right: 8px;
+            font-size: 1.3em;
+        }
+        .content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 60px;
+        }
+        .spotify-embed {
+            margin-bottom: 60px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .popular-tracks {
+            width: 100%;
+        }
+        h2 {
+            font-size: 2.5em;
+            color: #ff69b4;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .albums {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+        .album {
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        .album:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+        .album img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        .album-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 105, 180, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .album:hover .album-overlay {
+            opacity: 1;
+        }
+        .album-overlay a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.2em;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 10px 20px;
+            border: 2px solid white;
+            transition: all 0.3s ease;
+        }
+        .album-overlay a:hover {
+            background: white;
+            color: #ff69b4;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1><i class="fas fa-music"></i> <span id="artistName">Artist Name</span></h1>
+            <div class="social-links">
+                <a href="#" id="emailLink"><i class="fas fa-envelope"></i> <span id="email">Email</span></a>
+                <a href="#" id="instagramLink" target="_blank"><i class="fab fa-instagram"></i> Instagram</a>
+                <a href="#" id="spotifyLink" target="_blank"><i class="fab fa-spotify"></i> Spotify</a>
+                <a href="#" id="soundcloudLink" target="_blank"><i class="fab fa-soundcloud"></i> Soundcloud</a>
+            </div>
+        </div>
+    </header>
+    <main class="container">
+        <div class="content">
+            <div class="spotify-embed">
+                <iframe id="spotifyEmbed" width="500" height="380" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+            </div>
+            <div class="popular-tracks">
+                <h2>Popular Releases</h2>
+                <div class="albums" id="albumsContainer">
+                    <!-- Albums will be added here dynamically -->
+                </div>
+            </div>
+        </div>
+    </main>
+    <script>
+        // Fonction pour charger les données du fichier texte
+        async function loadArtistData() {
+            try {
+                const response = await fetch('/data.txt');
+                const text = await response.text();
+                const data = Object.fromEntries(text.split('\n').map(line => line.split('=')));
+                return data;
+            } catch (error) {
+                console.error('Erreur de chargement des données:', error);
+                return {};
+            }
+        }
+
+        // Fonction pour appliquer les données à la page
+        async function applyArtistData() {
+            const data = await loadArtistData();
+
+            // Appliquer les données aux éléments HTML
+            document.getElementById('artistName').textContent = data.artistName || 'Artist Name';
+            document.getElementById('email').textContent = data.email || 'Email';
+            document.getElementById('emailLink').href = `mailto:${data.email}`;
+            document.getElementById('instagramLink').href = data.instagram || '#';
+            document.getElementById('spotifyLink').href = data.spotify || '#';
+            document.getElementById('soundcloudLink').href = data.soundcloud || '#';
+            document.getElementById('spotifyEmbed').src = data.spotifyEmbed || '';
+        }
+
+        // Charger et appliquer les données à la page au chargement
+        document.addEventListener('DOMContentLoaded', applyArtistData);
+
+        // Chargement des albums (inchangé)
+        async function loadLinks() {
+            try {
+                const response = await fetch('/links.txt');
+                const text = await response.text();
+                return text.split('\n').filter(link => link.trim() !== '');
+            } catch (error) {
+                console.error('Error loading links:', error);
+                return [];
+            }
+        }
+
+        function createAlbumElement(index, link) {
+            const album = document.createElement('div');
+            album.className = 'album';
+            album.innerHTML = `
+                <img src="/covers/cover${index + 1}.png" alt="Album ${index + 1}">
+                <div class="album-overlay">
+                    <a href="${link}" target="_blank">Listen on Spotify</a>
+                </div>
+            `;
+            return album;
+        }
+
+        async function loadAlbums() {
+            const links = await loadLinks();
+            const albumsContainer = document.getElementById('albumsContainer');
+            
+            links.forEach((link, index) => {
+                if (index < 10) {
+                    const albumElement = createAlbumElement(index, link);
+                    albumsContainer.appendChild(albumElement);
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', loadAlbums);
+    </script>
+</body>
+</html>
